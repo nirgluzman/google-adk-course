@@ -3,7 +3,8 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from google.adk.agents import Agent
+from google.adk.agents import Agent, SequentialAgent
+from google.adk.tools import google_search
 
 # # LiteLlm provides a unified interface to multiple LLM providers, allowing easy switching between different models
 # from google.adk.models.lite_llm import LiteLlm
@@ -96,16 +97,87 @@ def get_current_time(city: str) -> dict:
     }
 
 
-root_agent = Agent(
-    name="travel_planner_agent",
-    # model=LiteLlm(AGENT_MODEL),
+# --- Sequential Agent ---
+# SequentialAgent is a subclass of Agent that executes a sequence of tasks.
+# It is useful for creating agents that perform a series of actions in a specific order.
+# -------------------------
+
+# Destination Research Agent - Researches location information.
+destination_research_agent = Agent(
+    name="DestinationResearchAgent",
     model=AGENT_MODEL,
+    description="An agent that researches travel destinations and gathers essential information.",
+    instruction="""
+    You are a travel researcher. You will be given a destination and travel preferences, and you will research:
+    - Best time to visit and weather patterns
+    - Top attractions and must-see locations
+    - Local culture, customs, and etiquette tips
+    - Transportation options within the destination
+    - Safety considerations and travel requirements
+    Provide comprehensive destination insights for trip planning.
+    """,
+    tools=[google_search],
+    output_key="destination_research",  # Stores output in state["destination_research"]
+)
+
+# Itinerary Builder Agent - Creates detailed travel schedule.
+itinerary_builder_agent = Agent(
+    name="ItineraryBuilderAgent",
+    model=AGENT_MODEL,
+    description="An agent that creates structured travel itineraries with daily schedules.",
+    instruction="""
+    You are a professional travel planner. Using the research from "destination_research" output, create a detailed itinerary that includes:
+    - Day-by-day schedule with recommended activities
+    - Suggested accommodation areas or districts
+    - Estimated time requirements for each activity
+    - Meal recommendations and dining suggestions
+    - Budget estimates for major expenses
+    Structure it logically for easy following during the trip.
+    """,
+    output_key="travel_itinerary",
+)
+
+# Travel Optimizer Agent - Adds practical tips and optimizations
+travel_optimizer_agent = Agent(
+    name="TravelOptimizerAgent",
+    model=AGENT_MODEL,
+    description="An agent that optimizes travel plans with practical advice and alternatives",
+    instruction="""
+    You are a seasoned travel consultant. Using the itinerary from "travel_itinerary" output, optimize it by adding:
+    - Money-saving tips and budget alternatives
+    - Packing recommendations specific to the destination
+    - Backup plans for weather or unexpected situations
+    - Local apps, websites, or resources to download
+    - Cultural do's and don'ts for respectful travel
+
+    Format the final output as:
+        ITINERARY: {travel_itinerary}
+        OPTIMIZATION TIPS: [your money-saving and practical tips here]
+        TRAVEL ESSENTIALS: [packing and preparation advice here]
+        BACKUP PLANS: [alternative options and contingencies here]
+    """,
+)
+
+# This agent orchestrates the pipeline by running the sub_agents in order.
+root_agent = SequentialAgent(
+    name="TravelPlannerAgent",
+    # model=LiteLlm(AGENT_MODEL), # Not needed for SequentialAgent
+    # model=AGENT_MODEL, # Not needed for SequentialAgent
+    #
     # "What does this agent do?" (external documentation)
     # High-level summary of the agent's capabilities and purpose
-    description="AI-powered travel planner that creates personalized itineraries, suggests destinations, finds accommodations, and provides travel recommendations based on user preferences and budget",
+    description="A comprehensive system that researches destinations, builds itineraries, and optimizes travel plans",
     # "How should LLM behave?" (internal system prompt)
     # Direct behavioral instructions given to the language model
-    instruction="You are a travel planner agent that helps users plan their trips.",
+    # instruction="You are a travel planner agent that helps users plan their trips.",
+    #
     # Functions the agent can call to perform specific tasks (e.g., API calls, data retrieval)
-    tools=[get_weather, get_current_time],
+    # tools=[get_weather, get_current_time],
+    #
+    # The agents will run in the order provided:.
+    sub_agents=[
+        destination_research_agent,
+        itinerary_builder_agent,
+        travel_optimizer_agent,
+    ],
 )

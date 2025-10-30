@@ -15,3 +15,13 @@ ADK provides several distinct agent categories to build sophisticated applicatio
 3. Custom Agents - User-defined agent implementations
 
 ![](docs/agent-types.png)
+
+## [Sequential Agents](https://google.github.io/adk-docs/agents/workflow-agents/sequential-agents/)
+
+A SequentialAgent runs its sub-agents one after another in the exact order they appear, completing each step before starting the next.
+- This pattern is ideal for multi-step workflows or pipelines where later steps depend on earlier outputs.
+- It provides deterministic execution ordering and can be combined with error handling, conditional checks, or retries to control flow between steps.
+
+![](docs/sequential-agents.png)
+
+![](docs/travel-planning-system.png)
