@@ -16,7 +16,13 @@ ADK provides several distinct agent categories to build sophisticated applicatio
 
 ![](docs/agent-types.png)
 
-## [Sequential Agents](https://google.github.io/adk-docs/agents/workflow-agents/sequential-agents/)
+## [Workflow Agents](https://google.github.io/adk-docs/agents/workflow-agents/)
+
+- Components for orchestrating the execution flow of sub-agents.
+- Workflow Agents operate based on predefined logic.
+  They determine the execution sequence according to their type (e.g., sequential, parallel, loop) without consulting an LLM for the orchestration itself. This results in deterministic and predictable execution patterns.
+
+### [Sequential Agents](https://google.github.io/adk-docs/agents/workflow-agents/sequential-agents/)
 
 A SequentialAgent runs its sub-agents one after another in the exact order they appear, completing each step before starting the next.
 - This pattern is ideal for multi-step workflows or pipelines where later steps depend on earlier outputs.
@@ -25,3 +31,12 @@ A SequentialAgent runs its sub-agents one after another in the exact order they 
 ![](docs/sequential-agents.png)
 
 ![](docs/travel-planning-system.png)
+
+### [Parallel Agents](https://google.github.io/adk-docs/agents/workflow-agents/parallel-agents/)
+
+ - Workflow agent that executes its sub-agents concurrently.
+ - This dramatically speeds up workflows where tasks can be performed independently.
+
+![](docs/parallel-agents.png)
+
+![](docs/blog-content-writer-system.png)
