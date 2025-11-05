@@ -10,11 +10,11 @@ ADK allows to integrate various Large Language Models (LLMs) into our agents.
 
 ## [Agent types & models](https://medium.com/@danushidk507/google-agent-development-kit-adk-agent-types-and-models-9c2189d5a7d2)
 ADK provides several distinct agent categories to build sophisticated applications.
-1. LLM Agents - Direct language model interaction classes (`LlmAgent`, `Agent`)
-2. Workflow Agents - Multi-step execution patterns (SequentialAgent, ParallelAgent, LoopAgent)
-3. Custom Agents - User-defined agent implementations
+1. **LLM Agents** - Direct language model interaction classes (`LlmAgent`, `Agent`)
+2. **Workflow Agents** - Multi-step execution patterns (SequentialAgent, ParallelAgent, LoopAgent)
+3. **Custom Agents** - User-defined agent implementations
 
-![](docs/agent-types.png)
+![](assets/agent-types.png)
 
 ## [Workflow Agents](https://google.github.io/adk-docs/agents/workflow-agents/)
 
@@ -28,18 +28,18 @@ A SequentialAgent runs its sub-agents one after another in the exact order they 
 - This pattern is ideal for multi-step workflows or pipelines where later steps depend on earlier outputs.
 - It provides deterministic execution ordering and can be combined with error handling, conditional checks, or retries to control flow between steps.
 
-![](docs/sequential-agents.png)
+![](assets/sequential-agents.png)
 
-![](docs/travel-planning-system.png)
+![](assets/travel-planning-system.png)
 
 ### [Parallel Agents](https://google.github.io/adk-docs/agents/workflow-agents/parallel-agents/)
 
  - Workflow agent that executes its sub-agents concurrently.
  - This dramatically speeds up workflows where tasks can be performed independently.
 
-![](docs/parallel-agents.png)
+![](assets/parallel-agents.png)
 
-![](docs/blog-content-writer-system.png)
+![](assets/blog-content-writer-system.png)
 
 ## [Session & Memory](https://google.github.io/adk-docs/sessions/)
 Agents in a multi-turn conversation needcontext and the ability to understand it.<br>
@@ -62,7 +62,7 @@ ADK provides structured ways to manage this context through `Session`, `State`, 
    - It acts as a knowledge base the agent can search to recall information or context beyond the
      immediate conversation.
 
-![](docs/session-and-memory-core-concepts.png)
+![](assets/session-and-memory-core-concepts.png)
 
 ADK provides services to manage these concepts:
 1. `SessionService`: Manages the different conversation threads (`Session` objects).
@@ -72,13 +72,13 @@ ADK provides services to manage these concepts:
    - Handles ingesting information (often from completed `Session`s) into the long-term store.
    - Provides methods to search this stored knowledge based on queries.
 
-![](docs/managing-context-service.png)
+![](assets/managing-context-service.png)
 
 ### [The `Session` Object](https://google.github.io/adk-docs/sessions/session/)
 - When a user starts interacting with your agent, the `SessionService` creates a `Session` object (`google.adk.sessions.Session`).
 - This object acts as the container holding everything related to that **one** specific chat thread.
 
-![](docs/session-object.png)
+![](assets/session-object.png)
 
 ### [`SessionService` Implementations](https://google.github.io/adk-docs/sessions/session/#sessionservice-implementations)
 ADK provides different `SessionService` implementations:
@@ -86,4 +86,4 @@ ADK provides different `SessionService` implementations:
 2. `VertexAiSessionService` - uses Google Cloud Vertex AI infrastructure via API calls for session management.
 3. `DatabaseSessionService` - connects to a relational database (e.g., PostgreSQL, MySQL, SQLite) to store session data persistently in tables.
 
-![](docs/SessionService-implementations.png)
+![](assets/SessionService-implementations.png)
