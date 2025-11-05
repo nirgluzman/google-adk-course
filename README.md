@@ -40,3 +40,50 @@ A SequentialAgent runs its sub-agents one after another in the exact order they 
 ![](docs/parallel-agents.png)
 
 ![](docs/blog-content-writer-system.png)
+
+## [Session & Memory](https://google.github.io/adk-docs/sessions/)
+Agents in a multi-turn conversation needcontext and the ability to understand it.<br>
+ADK provides structured ways to manage this context through `Session`, `State`, and `Memory`.
+
+1. `Session`: The Current Conversation Thread.
+   - Represents a single, ongoing interaction between a user and your agent system.
+   - Contains the chronological sequence of messages and actions taken by the agent (referred to
+     `Events`) during that specific interaction.
+   - A Session can also hold temporary data (`State`) relevant only during this conversation.
+
+2. `State` (`session.state`): Data Within the Current Conversation.
+   - Data stored within a specific Session.
+   - Used to manage information relevant only to the current, active conversation thread (e.g., items
+     in a shopping cart during this chat, user preferences mentioned in this session).
+
+3. `Memory`: Searchable, Cross-Session Information.
+   - Represents a store of information that might span multiple past sessions or include external
+     data sources.
+   - It acts as a knowledge base the agent can search to recall information or context beyond the
+     immediate conversation.
+
+![](docs/session-and-memory-core-concepts.png)
+
+ADK provides services to manage these concepts:
+1. `SessionService`: Manages the different conversation threads (`Session` objects).
+   - Handles the lifecycle: creating, retrieving, updating (appending `Event`s, modifying `State`), and deleting individual Sessions.
+
+2. `MemoryService`: Manages the Long-Term Knowledge Store (`Memory`).
+   - Handles ingesting information (often from completed `Session`s) into the long-term store.
+   - Provides methods to search this stored knowledge based on queries.
+
+![](docs/managing-context-service.png)
+
+### [The `Session` Object](https://google.github.io/adk-docs/sessions/session/)
+- When a user starts interacting with your agent, the `SessionService` creates a `Session` object (`google.adk.sessions.Session`).
+- This object acts as the container holding everything related to that **one** specific chat thread.
+
+![](docs/session-object.png)
+
+### [`SessionService` Implementations](https://google.github.io/adk-docs/sessions/session/#sessionservice-implementations)
+ADK provides different `SessionService` implementations:
+1. `InMemorySessionService` - stores all session data directly in the application's memory.
+2. `VertexAiSessionService` - uses Google Cloud Vertex AI infrastructure via API calls for session management.
+3. `DatabaseSessionService` - connects to a relational database (e.g., PostgreSQL, MySQL, SQLite) to store session data persistently in tables.
+
+![](docs/SessionService-implementations.png)
