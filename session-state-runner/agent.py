@@ -4,32 +4,43 @@ Demonstrates how to create a stateful AI agent that maintains customer context a
 conversation history across multiple interactions using ADK sessions.
 """
 
-# Enables asynchronous programming for non-blocking operations (sessions, API calls)
+# Enable asynchronous programming for non-blocking operations (sessions, API calls)
 import asyncio
 
-# Generates unique session IDs to identify individual conversations
+# Generate unique session IDs to identify individual conversations
 import uuid
 
-# Loads environment variables from .env file (API keys, config)
+# Load environment variables from .env file (API keys, config)
 from dotenv import load_dotenv
 
 # Core agent class for creating AI agents with conversation capabilities
 from google.adk.agents import Agent
 
-# Manages conversation flow and session state for multi-turn interactions
+# Manage conversation flow and session state for multi-turn interactions
 from google.adk.runners import Runner
 
-# Stores session data and conversation state in memory
+# Store session data and conversation state in memory
 from google.adk.sessions import InMemorySessionService
 
-# Provides structured message types (Content, Part) for agent communication
+# Provide structured message types (Content, Part) for agent communication
 from google.genai import types
 
-# Loads API keys and configuration from .env file into environment variables
+# Data validation library for creating structured data models with type checking
+from pydantic import BaseModel, Field
+
+# Load API keys and configuration from .env file into environment variables
 load_dotenv()
 
-# Specifies which language model the agent will use for responses
+# Specify which language model the agent will use for responses
 AGENT_MODEL = "gemini-2.5-flash"
+
+
+# Define customer schema using Pydantic
+class CustomerProfileOutput(BaseModel):
+    customer_name: str = Field(description="Full name of the customer.")
+    favorite_category: str = Field(description="Customer's preferred product category")
+    recent_order: str = Field(description="Details of the customer's most recent order")
+    loyalty_points: int = Field(description="Current number of loyalty/reward points")
 
 
 async def main():
@@ -48,6 +59,10 @@ async def main():
     support_agent = Agent(
         name="CustomerSupport",
         model=AGENT_MODEL,
+        # Output schema when agent replies
+        output_schema=CustomerProfileOutput,
+        # The key in session state to store the output of the agent
+        output_key="state",
         instruction="""
       You are a friendly customer agent for TechStore.
       Respond in plain text without any formatting like ** or * or #.
@@ -106,6 +121,23 @@ async def main():
         app_name=APP_NAME, user_id=CUSTOMER_ID, session_id=SESSION_ID
     )
 
+    # Check if session exists and if structured output exists in session state
+    if session and "state" in session.state:
+        structured_data = session.state["state"]
+        print(structured_data)
+        print("updating session state:")
+
+        # Apply the structured updates to the main session state keys through for loop
+        for key, value in structured_data.items():
+            session.state[key] = value
+            print(f" - {key} updated to {value}")
+
+        # Remove the temporary output_key from the session state
+        del session.state["state"]
+    else:
+        print("No structured output found in session state.")
+
+    # Display remaining session data (original customer data keys persist after removing temporary "state" key)
     print("\nSession Data:")
     if session and hasattr(session, "state"):
         for key, value in session.state.items():
