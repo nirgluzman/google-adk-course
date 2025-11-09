@@ -87,3 +87,10 @@ ADK provides different `SessionService` implementations:
 3. `DatabaseSessionService` - connects to a relational database (e.g., PostgreSQL, MySQL, SQLite) to store session data persistently in tables.
 
 ![](assets/SessionService-implementations.png)
+
+## [Callbacks - Filtering and Guardrails](https://google.github.io/adk-docs/callbacks/)
+
+**Callbacks** let you hook into an agent's execution at key stages to observe, customize, or control behavior without modifying ADK's core code. <br />
+Simply define functions and attach them to your agent - ADK calls them automatically at predefined checkpoints.
+
+![](assets/callbacks-filtering&guardrails.png)
